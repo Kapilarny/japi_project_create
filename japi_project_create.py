@@ -5,6 +5,8 @@ parser.add_argument("guid", type=str, help="Name of the JAPI plugin to create.")
 parser.add_argument("author", type=str, help="Author(s) of the project.")
 parser.add_argument("--description", type=str, default="A JAPI plugin.", help="Description of the project.")
 
+parser.exit_on_error = True
+
 args = parser.parse_args()
 
 print(f"Creating JAPI project: {args.guid}")
