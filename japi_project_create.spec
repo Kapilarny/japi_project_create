@@ -5,7 +5,9 @@ a = Analysis(
     ['japi_project_create.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[
+        ("resources", "resources")
+    ],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
