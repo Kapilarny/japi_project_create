@@ -4,6 +4,18 @@ project(%%{guid}%% VERSION 1.0 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_SHARED_LIBRARY_PREFIX "")
 
+option(STATIC_CPP_RUNTIME "Link C/C++ runtime statically" ON)
+
+if (MSVC AND STATIC_CPP_RUNTIME)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY
+            "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+elseif((CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang") AND STATIC_CPP_RUNTIME)
+    add_link_options(
+            -static-libstdc++
+            -static-libgcc
+    )
+endif()
+
 add_library(%%{guid}%% SHARED
         src/main.cpp
 )
