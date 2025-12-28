@@ -38,52 +38,17 @@ project_dir = args.guid
 os.makedirs(project_dir, exist_ok=True)
 print(f"Project directory '{project_dir}' created.")
 
-# Render template files
 ctx = {
     "guid": args.guid,
     "author": args.author,
     "description": args.description,
 }
 
-template_files = selected_template.render_template_files(ctx)
-for tf in template_files:
-    file_path = os.path.join(project_dir, tf.full_path)
-    os.makedirs(os.path.dirname(file_path), exist_ok=True)
-    with open(file_path, "w", encoding="utf-8") as f:
-        f.write(tf.content)
-    print(f"Created file: {tf.full_path}")
-
-# Download includes.zip and extract it
-includes_url = "https://github.com/Kapilarny/JAPI/releases/latest/download/includes.zip"
-includes_zip_path = os.path.join(project_dir, "includes.zip")
-
-response = requests.get(includes_url)
-if response.status_code != 200:
-    print(f"Failed to download includes.zip: {response.status_code}")
-    exit(1)
-
-with open(includes_zip_path, "wb") as f:
-    f.write(response.content)
-    print("Downloaded includes.zip")
-
-# Extract includes.zip
-with zipfile.ZipFile(includes_zip_path, 'r') as zip_ref:
-    zip_ref.extractall(os.path.join(project_dir, "includes"))
-    print("Extracted includes.zip")
-
-os.remove(includes_zip_path)
-print("Removed includes.zip")
-
-# Download JAPI.dll
-japi_dll_url = "https://github.com/Kapilarny/JAPI/releases/latest/download/JAPI.dll"
-japi_dll_path = os.path.join(project_dir, "bins", "JAPI.dll")
-os.makedirs(os.path.dirname(japi_dll_path), exist_ok=True)
-
-response = requests.get(japi_dll_url)
-if response.status_code != 200:
-    print(f"Failed to download JAPI.dll: {response.status_code}")
-    exit(1)
-
-with open(japi_dll_path, "wb") as f:
-    f.write(response.content)
-    print("Downloaded JAPI.dll")
+build_steps = selected_template.get_build_steps(ctx)
+for step in build_steps:
+    step.print_info()
+    # print(f"Executing build step: {step.get_step_name()}")
+    
+    if not step.execute():
+        print(f"Build step '{step.get_step_name()}' failed.")
+        sys.exit(1)

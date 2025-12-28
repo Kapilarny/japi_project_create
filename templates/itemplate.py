@@ -3,6 +3,8 @@ import sys
 import os
 import re
 
+from templates.build import BuildStep
+
 def resource_path(relative_path):
     if hasattr(sys, '_MEIPASS'):
         return os.path.join(sys._MEIPASS, relative_path) # type: ignore[attr-defined]
@@ -26,9 +28,26 @@ class TemplateFile:
 
 class ITemplate(ABC):
     @abstractmethod
-    def render_template_files(self, ctx: dict) -> list[TemplateFile]:
-        """Render the template files with the given context."""
+    def get_build_steps(self, ctx: dict) -> list[BuildStep]:
+        """Return the list of build steps for this template."""
         pass
+
+    def render_template_files(self, ctx: dict) -> list[TemplateFile]:
+        base = resource_path(f"resources/{self.get_template_name()}")
+
+        result = []
+
+        for root, _, files in os.walk(base):
+            for file in files:
+                rel = os.path.relpath(os.path.join(root, file), base)
+
+                with open(os.path.join(root, file), "r", encoding="utf-8") as f:
+                    content = f.read()
+                    tf = TemplateFile(filename=file, path=os.path.dirname(rel))
+                    tf.content = reformat_string(content, ctx)
+                    result.append(tf)
+                    
+        return result
 
     @abstractmethod
     def get_template_name(self) -> str:

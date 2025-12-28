@@ -14,4 +14,4 @@ target_include_directories(%%{guid}%% PRIVATE
 )
 
 target_link_libraries(%%{guid}%% PRIVATE
-        ${{CMAKE_SOURCE_DIR}}/bins/JAPI.dll)
+        ${CMAKE_SOURCE_DIR}/bins/JAPI.dll)
