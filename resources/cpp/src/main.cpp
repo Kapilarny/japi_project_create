@@ -1,4 +1,4 @@
-#include "plugin.h"
+#include "main.h"
 
 #include <JoJoAPI.h>
 
